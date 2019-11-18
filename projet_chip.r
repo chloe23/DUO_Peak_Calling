@@ -122,3 +122,49 @@ dim(sub_region_b_5)
 barplot(region_b$Pos %in% sub_region_b_5$Pos)
 
 
+###
+# Region C
+###
+
+View(region_c)
+summary(region_c$IP > region_c$Control)
+
+
+### Visuisalisation des données
+plot(x = region_c$Pos, y = region_c$IP + region_c$Control)
+lines(x = region_c$Pos,y = region_c$IP, col = "red" )
+lines(x = region_c$Pos,y = region_c$Control, col = "blue" )
+
+## Paramètres
+taille_fenetre <- 4 #taille_fenetre désignle la taille de la fene^tre
+taille_pas <-  3 # taille_pas désigne la valeur du pas
+moy_ratio <- 1 # moy_ratio correspond au rapport des moyennes IP / CTRL
+
+## Séquence de répétition 
+seq_pas <- seq(from = 1, to = nrow(region_c),by = taille_pas)
+
+## Function
+
+sub_region_c_1 <- c()
+sub_region_c_2 <- c()
+sub_region_c_3 <- c()
+sub_region_c_4 <- c()
+sub_region_c_5 <- c()
+
+
+## Version stringente
+for (i in seq_pas){
+  sub_region_c_1 <- region_c[i:(i+taille_fenetre), ]
+  sub_region_c_2 <- region_c[i+taille_fenetre:(i+2*taille_fenetre), ]
+  if ((mean(sub_region_c_1$IP, na.rm = T) > moy_ratio*mean(sub_region_c_1$Control, na.rm = T)) 
+      & (mean(sub_region_c_2$IP, na.rm = T) > moy_ratio*mean(sub_region_c_2$Control, na.rm = T))){
+    sub_region_c_3 <- rbind(sub_region_c_3, sub_region_c_1)
+    sub_region_c_4 <- sub_region_c_3[sub_region_c_3$IP>sub_region_c_3$Control,]
+    rownames(sub_region_c_4) <- c()
+    sub_region_c_5 <- sub_region_c_4[-which(duplicated(sub_region_c_4)), ]
+  }
+}
+
+dim(sub_region_c_5)
+# View(sub_region_c_5)
+barplot(region_c$Pos %in% sub_region_c_5$Pos)---
